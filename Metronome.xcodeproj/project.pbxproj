@@ -18,6 +18,10 @@
 		AFE05E8516C9A84800B79DA6 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AFE05E8416C9A84800B79DA6 /* Default-568h@2x.png */; };
 		AFE05E8816C9A84800B79DA6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE05E8716C9A84800B79DA6 /* ViewController.m */; };
 		AFE05E8B16C9A84800B79DA6 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFE05E8916C9A84800B79DA6 /* ViewController.xib */; };
+		AFE05E9316C9AC5800B79DA6 /* MetronomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE05E9216C9AC5800B79DA6 /* MetronomeView.m */; };
+		AFE05E9516C9AC9D00B79DA6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFE05E9416C9AC9D00B79DA6 /* QuartzCore.framework */; };
+		AFE3418016CAC88600EC244C /* MetronomeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE3417F16CAC88600EC244C /* MetronomeLayer.m */; };
+		AFE3418316CADCC200EC244C /* testView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE3418216CADCC200EC244C /* testView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +41,13 @@
 		AFE05E8616C9A84800B79DA6 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		AFE05E8716C9A84800B79DA6 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		AFE05E8A16C9A84800B79DA6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
+		AFE05E9116C9AC5800B79DA6 /* MetronomeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetronomeView.h; sourceTree = "<group>"; };
+		AFE05E9216C9AC5800B79DA6 /* MetronomeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetronomeView.m; sourceTree = "<group>"; };
+		AFE05E9416C9AC9D00B79DA6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		AFE3417E16CAC88600EC244C /* MetronomeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetronomeLayer.h; sourceTree = "<group>"; };
+		AFE3417F16CAC88600EC244C /* MetronomeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetronomeLayer.m; sourceTree = "<group>"; };
+		AFE3418116CADCC200EC244C /* testView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testView.h; sourceTree = "<group>"; };
+		AFE3418216CADCC200EC244C /* testView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = testView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AFE05E9516C9AC9D00B79DA6 /* QuartzCore.framework in Frameworks */,
 				AFE05E6F16C9A84800B79DA6 /* UIKit.framework in Frameworks */,
 				AFE05E7116C9A84800B79DA6 /* Foundation.framework in Frameworks */,
 				AFE05E7316C9A84800B79DA6 /* CoreGraphics.framework in Frameworks */,
@@ -73,6 +85,7 @@
 		AFE05E6D16C9A84800B79DA6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AFE05E9416C9AC9D00B79DA6 /* QuartzCore.framework */,
 				AFE05E6E16C9A84800B79DA6 /* UIKit.framework */,
 				AFE05E7016C9A84800B79DA6 /* Foundation.framework */,
 				AFE05E7216C9A84800B79DA6 /* CoreGraphics.framework */,
@@ -87,8 +100,14 @@
 				AFE05E7E16C9A84800B79DA6 /* AppDelegate.m */,
 				AFE05E8616C9A84800B79DA6 /* ViewController.h */,
 				AFE05E8716C9A84800B79DA6 /* ViewController.m */,
+				AFE3417E16CAC88600EC244C /* MetronomeLayer.h */,
+				AFE3417F16CAC88600EC244C /* MetronomeLayer.m */,
+				AFE05E9116C9AC5800B79DA6 /* MetronomeView.h */,
+				AFE05E9216C9AC5800B79DA6 /* MetronomeView.m */,
 				AFE05E8916C9A84800B79DA6 /* ViewController.xib */,
 				AFE05E7516C9A84800B79DA6 /* Supporting Files */,
+				AFE3418116CADCC200EC244C /* testView.h */,
+				AFE3418216CADCC200EC244C /* testView.m */,
 			);
 			path = Metronome;
 			sourceTree = "<group>";
@@ -176,6 +195,9 @@
 				AFE05E7B16C9A84800B79DA6 /* main.m in Sources */,
 				AFE05E7F16C9A84800B79DA6 /* AppDelegate.m in Sources */,
 				AFE05E8816C9A84800B79DA6 /* ViewController.m in Sources */,
+				AFE05E9316C9AC5800B79DA6 /* MetronomeView.m in Sources */,
+				AFE3418016CAC88600EC244C /* MetronomeLayer.m in Sources */,
+				AFE3418316CADCC200EC244C /* testView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,6 +320,7 @@
 				AFE05E9016C9A84800B79DA6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
