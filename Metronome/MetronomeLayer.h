@@ -14,6 +14,7 @@
 @property(nonatomic, strong)CATextLayer *bpmTextLayer;
 
 - (void)touchesBegan: (float)xPos :(float) yPos;
-- (void)touchesEnded: (float)xPos :(float) yPos;
+- (void)touchesEnded;
 - (void)touchesMoved: (float)xPos :(float) yPos;
+- (void)increment: (float) yPos;
 @end

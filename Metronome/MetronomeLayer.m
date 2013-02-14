@@ -22,12 +22,23 @@
     [_bpmTextLayer setForegroundColor:[UIColor whiteColor].CGColor];
     [_bpmTextLayer setBackgroundColor:[UIColor clearColor].CGColor];
     [_bpmTextLayer setFrame:CGRectMake(0, 60, 180, 60)];
-    [_bpmTextLayer setPosition:CGPointMake(200, 200)];
+    [_bpmTextLayer setPosition:CGPointMake(200, 100)];
     [_bpmTextLayer setContentsScale:[[UIScreen mainScreen]scale]];
     [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", 100]];
     [_bpmTextLayer setFontSize:48.0f];
     [_bpmTextLayer setOpacity:1.0f];
     [self addSublayer:_bpmTextLayer];
+}
+
+- (void)increment: (float) yPos
+{
+    if(yPos > [_bpmTextLayer position].y){
+        [_bpmTextLayer setPosition:CGPointMake([_bpmTextLayer position].x, [_bpmTextLayer position].y + 1)];
+        [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)[_bpmTextLayer position].y]];
+    }else{
+        [_bpmTextLayer setPosition:CGPointMake([_bpmTextLayer position].x, [_bpmTextLayer position].y - 1)];
+        [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)[_bpmTextLayer position].y]];
+    }
 }
 
 - (void)touchesBegan: (float)xPos :(float) yPos
@@ -68,7 +79,7 @@
     [_lineLayer addAnimation:anim forKey:nil];
 }
 
-- (void)touchesEnded: (float)xPos :(float) yPos
+- (void)touchesEnded
 {
     [_bpmTextLayer setPosition:CGPointMake([self position].x + 50, [_bpmTextLayer position].y)];
     
@@ -104,8 +115,6 @@
     CAAnimationGroup *anim = [CAAnimationGroup animation];
     [anim setAnimations:animationsArray];
     [_lineLayer addAnimation:anim forKey:nil];
-    
-    [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)yPos]];
 }
 
 - (void)touchesMoved: (float)xPos :(float) yPos
