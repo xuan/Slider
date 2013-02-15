@@ -47,36 +47,39 @@
     [_lineLayer setPosition:CGPointMake(xPos, yPos)];
     [_bpmTextLayer setPosition:CGPointMake(80, yPos)];
     [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)yPos]];
-    
+
     CABasicAnimation *scaleBpmText = [[CABasicAnimation alloc] init];
     [scaleBpmText setDuration:0.5f];
+    [scaleBpmText setRemovedOnCompletion:NO];
     [scaleBpmText setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn]];
     [scaleBpmText setFromValue: [NSNumber numberWithFloat: 1.0f]];
     [scaleBpmText setToValue: [NSNumber numberWithFloat: 0.5f]];
     [scaleBpmText setFillMode:kCAFillModeForwards];
     [scaleBpmText setRemovedOnCompletion:NO];
     [_bpmTextLayer addAnimation:scaleBpmText forKey:@"transform.scale"];
-    
+
     CABasicAnimation *scaleLine = [[CABasicAnimation alloc] init];
     [scaleLine setDuration:0.5f];
+    [scaleLine setRemovedOnCompletion:NO];
     [scaleLine setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
     [scaleLine setFromValue: [NSNumber numberWithFloat: 3.0f]];
     [scaleLine setToValue: [NSNumber numberWithFloat: 1.0f]];
     [_lineLayer addAnimation:scaleLine forKey:@"transform.scale.y"];
-    
+
     CABasicAnimation *fadeLine = [[CABasicAnimation alloc] init];
     [fadeLine setDuration:0.5f];
+    [fadeLine setRemovedOnCompletion:NO];
     [fadeLine setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
     [fadeLine setFromValue: [NSNumber numberWithFloat: 0.0f]];
     [fadeLine setToValue: [NSNumber numberWithFloat: 0.7f]];
     [_lineLayer addAnimation:fadeLine forKey:@"opacity"];
-    
+
     NSMutableArray* animationsArray = [NSMutableArray arrayWithObjects:scaleLine, fadeLine,nil];
-    
-    CAAnimationGroup *anim = [CAAnimationGroup animation];
-    [anim setAnimations:animationsArray];
-    [anim setFillMode:kCAFillModeForwards];
-    [_lineLayer addAnimation:anim forKey:nil];
+
+    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+    [animationGroup setAnimations:animationsArray];
+    [animationGroup setFillMode:kCAFillModeForwards];
+    [_lineLayer addAnimation:animationGroup forKey:nil];
 }
 
 - (void)touchesEnded
@@ -112,15 +115,15 @@
     
     NSMutableArray* animationsArray = [NSMutableArray arrayWithObjects:scaleBpmText, scaleLine, fadeLine,nil];
     
-    CAAnimationGroup *anim = [CAAnimationGroup animation];
-    [anim setAnimations:animationsArray];
-    [_lineLayer addAnimation:anim forKey:nil];
+    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+    [animationGroup setAnimations:animationsArray];
+    [_lineLayer addAnimation:animationGroup forKey:nil];
 }
 
 - (void)touchesMoved: (float)xPos :(float) yPos
 {
     float displayPos = 80;
-    
+
     if((int)xPos < 130){
         displayPos = 250;
     }
@@ -131,8 +134,6 @@
     [_bpmTextLayer setPosition:CGPointMake(displayPos, yPos)];
     [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)yPos]];
     [CATransaction commit];
-    
-    
 }
 
 @end
