@@ -66,6 +66,7 @@ typedef enum : NSInteger {
     if (gesture.state == UIGestureRecognizerStateBegan)
     {
         direction = kDirectionNone;
+        [metronomeLayer touchesBegan:loc.x :loc.y];
     }
     else if (gesture.state == UIGestureRecognizerStateChanged)
     {
