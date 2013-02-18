@@ -21,7 +21,6 @@
 		AFE05E9316C9AC5800B79DA6 /* MetronomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE05E9216C9AC5800B79DA6 /* MetronomeView.m */; };
 		AFE05E9516C9AC9D00B79DA6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFE05E9416C9AC9D00B79DA6 /* QuartzCore.framework */; };
 		AFE3418016CAC88600EC244C /* MetronomeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE3417F16CAC88600EC244C /* MetronomeLayer.m */; };
-		AFE3418316CADCC200EC244C /* testView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE3418216CADCC200EC244C /* testView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,8 +45,6 @@
 		AFE05E9416C9AC9D00B79DA6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		AFE3417E16CAC88600EC244C /* MetronomeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetronomeLayer.h; sourceTree = "<group>"; };
 		AFE3417F16CAC88600EC244C /* MetronomeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetronomeLayer.m; sourceTree = "<group>"; };
-		AFE3418116CADCC200EC244C /* testView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testView.h; sourceTree = "<group>"; };
-		AFE3418216CADCC200EC244C /* testView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = testView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,8 +103,6 @@
 				AFE05E9216C9AC5800B79DA6 /* MetronomeView.m */,
 				AFE05E8916C9A84800B79DA6 /* ViewController.xib */,
 				AFE05E7516C9A84800B79DA6 /* Supporting Files */,
-				AFE3418116CADCC200EC244C /* testView.h */,
-				AFE3418216CADCC200EC244C /* testView.m */,
 			);
 			path = Metronome;
 			sourceTree = "<group>";
@@ -197,7 +192,6 @@
 				AFE05E8816C9A84800B79DA6 /* ViewController.m in Sources */,
 				AFE05E9316C9AC5800B79DA6 /* MetronomeView.m in Sources */,
 				AFE3418016CAC88600EC244C /* MetronomeLayer.m in Sources */,
-				AFE3418316CADCC200EC244C /* testView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

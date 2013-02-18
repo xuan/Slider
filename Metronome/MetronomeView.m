@@ -9,7 +9,6 @@
 #import "MetronomeView.h"
 #import "MetronomeLayer.h"
 
-
 CGFloat const gestureMinimumTranslation = 20.0;
 
 typedef enum : NSInteger {
@@ -31,13 +30,18 @@ typedef enum : NSInteger {
 
 @implementation MetronomeView
 
+@synthesize metronomeLayer;
+
 - (void)awakeFromNib
 {
-    _metronomeLayer = [MetronomeLayer layer];
-    [_metronomeLayer setFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    [[self layer]addSublayer:_metronomeLayer];
-    [_metronomeLayer setNeedsDisplay];
-    
+    //Add layers
+    metronomeLayer = [MetronomeLayer layer];
+    //set metronomeLayer to fit whole screen
+    [metronomeLayer setFrame:CGRectMake(0, 0, [self frame].size.width, [self frame].size.height)];
+    [[self layer]addSublayer:metronomeLayer];
+    [metronomeLayer setNeedsDisplay];
+
+    //Register gestures
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     [self addGestureRecognizer:tapRecognizer];
     
@@ -45,62 +49,51 @@ typedef enum : NSInteger {
     [self addGestureRecognizer:panRecognizer];
 }
 
+#pragma mark - Gesture handlers
+
 - (void)handleTap:(UITapGestureRecognizer *)gesture
 {
     CGPoint loc = [gesture locationOfTouch:0 inView:self];
-    [_metronomeLayer increment: loc.y];
+    [metronomeLayer increment: loc.y];
 }
 
 - (void)handlePan:(UIPanGestureRecognizer *)gesture
 {
     CGPoint translation = [gesture translationInView:self];
-    direction = [self determineCameraDirectionIfNeeded:translation];
+    CGPoint loc = [gesture locationInView:self];
 
-    if (gesture.state == UIGestureRecognizerStateChanged && (direction == kDirectionDown || direction == kDirectionUp))
+
+    if (gesture.state == UIGestureRecognizerStateBegan)
     {
-        CGPoint loc = [gesture locationOfTouch:0 inView:self];
-        [_metronomeLayer touchesBegan:loc.x :loc.y];
-    } else if (gesture.state == UIGestureRecognizerStateChanged)
-    {
-        CGPoint loc = [gesture locationOfTouch:0 inView:self];
-        // ok, now initiate movement in the direction indicated by the user's gesture
-        switch (direction)
-        {
-            case kDirectionDown:
-                [_metronomeLayer touchesMoved:loc.x :loc.y];
-                break;
-                
-            case kDirectionUp:
-                [_metronomeLayer touchesMoved:loc.x :loc.y];
-                break;
-                
-            case kDirectionRight:
-                NSLog(@"Start moving right");
-                break;
-                
-            case kDirectionLeft:
-                NSLog(@"Start moving left");
-                break;
-                
-            default:
-                break;
-        }
-    } else if (gesture.state == UIGestureRecognizerStateEnded)
-    {
-        [_metronomeLayer touchesEnded];
         direction = kDirectionNone;
-        NSLog(@"Stop");
+    }
+    else if (gesture.state == UIGestureRecognizerStateChanged)
+    {
+        direction = [self determineDirectionIfNeeded:translation];
+
+        if (direction == kDirectionDown || direction == kDirectionUp) {
+            [metronomeLayer touchesMoved:loc.x :loc.y];
+        }
+    }
+    else if (gesture.state == UIGestureRecognizerStateEnded)
+    {
+        direction = [self determineDirectionIfNeeded:translation];
+        if (direction == kDirectionDown || direction == kDirectionUp) {
+            [metronomeLayer touchesEnded];
+        }
     }
 }
 
-- (MoveDirection)determineCameraDirectionIfNeeded:(CGPoint)translation
+- (MoveDirection)determineDirectionIfNeeded:(CGPoint)translation
 {
+    if (direction != kDirectionNone)
+        return direction;
     // determine if horizontal swipe only if you meet some minimum velocity
-    
+
     if (fabs(translation.x) > gestureMinimumTranslation)
     {
         BOOL gestureHorizontal = NO;
-        
+
         if (translation.y == 0.0)
         {
             gestureHorizontal = YES;
@@ -108,7 +101,7 @@ typedef enum : NSInteger {
         {
             gestureHorizontal = (fabs(translation.x / translation.y) > 5.0);
         }
-        
+
         if (gestureHorizontal)
         {
             if (translation.x > 0.0)
@@ -117,17 +110,17 @@ typedef enum : NSInteger {
                 return kDirectionLeft;
         }
     }
-    // determine if vertical swipe only if you meet some minimum velocity
-    
+            // determine if vertical swipe only if you meet some minimum velocity
+
     else if (fabs(translation.y) > gestureMinimumTranslation)
     {
         BOOL gestureVertical = NO;
-        
+
         if (translation.x == 0.0)
             gestureVertical = YES;
         else
             gestureVertical = (fabs(translation.y / translation.x) > 5.0);
-        
+
         if (gestureVertical)
         {
             if (translation.y > 0.0)
@@ -136,7 +129,7 @@ typedef enum : NSInteger {
                 return kDirectionUp;
         }
     }
-    
+
     return direction;
 }
 

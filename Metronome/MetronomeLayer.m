@@ -9,130 +9,111 @@
 #import "MetronomeLayer.h"
 
 @implementation MetronomeLayer
-
--(void) drawInContext:(CGContextRef)ctx {
-    _lineLayer = [CALayer layer];
-    [_lineLayer setBackgroundColor:[UIColor grayColor].CGColor];
-    [_lineLayer setFrame:CGRectMake(0, 60, 600, 40)];
-    [_lineLayer setOpacity:0.7f];
-    [_lineLayer setHidden:YES];
-    [self addSublayer:_lineLayer];
-    
-    _bpmTextLayer = [CATextLayer layer];
-    [_bpmTextLayer setForegroundColor:[UIColor whiteColor].CGColor];
-    [_bpmTextLayer setBackgroundColor:[UIColor clearColor].CGColor];
-    [_bpmTextLayer setFrame:CGRectMake(0, 60, 180, 60)];
-    [_bpmTextLayer setPosition:CGPointMake(200, 100)];
-    [_bpmTextLayer setContentsScale:[[UIScreen mainScreen]scale]];
-    [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", 100]];
-    [_bpmTextLayer setFontSize:48.0f];
-    [_bpmTextLayer setOpacity:1.0f];
-    [self addSublayer:_bpmTextLayer];
+{
 }
 
+@synthesize lineLayer, bpmTextLayer;
+
+-(void) drawInContext:(CGContextRef)ctx
+{
+    //draw and hide line until user touches
+    lineLayer = [CALayer layer];
+    [lineLayer setBackgroundColor:[UIColor grayColor].CGColor];
+    [lineLayer setFrame:CGRectMake(0, 60, 600, 40)];
+    [lineLayer setOpacity:0.0f];
+    [self addSublayer:lineLayer];
+    
+    bpmTextLayer = [CATextLayer layer];
+    [bpmTextLayer setForegroundColor:[UIColor whiteColor].CGColor];
+    [bpmTextLayer setBackgroundColor:[UIColor clearColor].CGColor];
+    [bpmTextLayer setFrame:CGRectMake(0, 0, 180, 60)];
+    [bpmTextLayer setPosition:CGPointMake(150, 100)];
+    [bpmTextLayer setContentsScale:[[UIScreen mainScreen]scale]];
+    [bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", 100]];
+    [bpmTextLayer setFontSize:48.0f];
+    [self addSublayer:bpmTextLayer];
+}
+
+//use for tap gesture to increment/decrement small values
 - (void)increment: (float) yPos
 {
-    if(yPos > [_bpmTextLayer position].y){
-        [_bpmTextLayer setPosition:CGPointMake([_bpmTextLayer position].x, [_bpmTextLayer position].y + 1)];
-        [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)[_bpmTextLayer position].y]];
-    }else{
-        [_bpmTextLayer setPosition:CGPointMake([_bpmTextLayer position].x, [_bpmTextLayer position].y - 1)];
-        [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)[_bpmTextLayer position].y]];
+    if(yPos > [bpmTextLayer position].y){ //user taps on top of the bpm text
+        [bpmTextLayer setPosition:CGPointMake([bpmTextLayer position].x, [bpmTextLayer position].y + 1)];
+        [bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)[bpmTextLayer position].y]];
+    }else{ //user taps below the bpm text
+        [bpmTextLayer setPosition:CGPointMake([bpmTextLayer position].x, [bpmTextLayer position].y - 1)];
+        [bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)[bpmTextLayer position].y]];
     }
-}
-
-- (void)touchesBegan: (float)xPos :(float) yPos
-{
-    [_lineLayer setHidden:NO];
-    [_lineLayer setPosition:CGPointMake(xPos, yPos)];
-    [_bpmTextLayer setPosition:CGPointMake(80, yPos)];
-    [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)yPos]];
-
-    CABasicAnimation *scaleBpmText = [[CABasicAnimation alloc] init];
-    [scaleBpmText setDuration:0.5f];
-    [scaleBpmText setRemovedOnCompletion:NO];
-    [scaleBpmText setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn]];
-    [scaleBpmText setFromValue: [NSNumber numberWithFloat: 1.0f]];
-    [scaleBpmText setToValue: [NSNumber numberWithFloat: 0.5f]];
-    [scaleBpmText setFillMode:kCAFillModeForwards];
-    [scaleBpmText setRemovedOnCompletion:NO];
-    [_bpmTextLayer addAnimation:scaleBpmText forKey:@"transform.scale"];
-
-    CABasicAnimation *scaleLine = [[CABasicAnimation alloc] init];
-    [scaleLine setDuration:0.5f];
-    [scaleLine setRemovedOnCompletion:NO];
-    [scaleLine setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
-    [scaleLine setFromValue: [NSNumber numberWithFloat: 3.0f]];
-    [scaleLine setToValue: [NSNumber numberWithFloat: 1.0f]];
-    [_lineLayer addAnimation:scaleLine forKey:@"transform.scale.y"];
-
-    CABasicAnimation *fadeLine = [[CABasicAnimation alloc] init];
-    [fadeLine setDuration:0.5f];
-    [fadeLine setRemovedOnCompletion:NO];
-    [fadeLine setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
-    [fadeLine setFromValue: [NSNumber numberWithFloat: 0.0f]];
-    [fadeLine setToValue: [NSNumber numberWithFloat: 0.7f]];
-    [_lineLayer addAnimation:fadeLine forKey:@"opacity"];
-
-    NSMutableArray* animationsArray = [NSMutableArray arrayWithObjects:scaleLine, fadeLine,nil];
-
-    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
-    [animationGroup setAnimations:animationsArray];
-    [animationGroup setFillMode:kCAFillModeForwards];
-    [_lineLayer addAnimation:animationGroup forKey:nil];
 }
 
 - (void)touchesEnded
 {
-    [_bpmTextLayer setPosition:CGPointMake([self position].x + 50, [_bpmTextLayer position].y)];
-    
-    CABasicAnimation *scaleBpmText = [[CABasicAnimation alloc] init];
+    [bpmTextLayer setPosition:CGPointMake([self position].x, [bpmTextLayer position].y)];
+
+    CABasicAnimation *scaleBpmText = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
     [scaleBpmText setDuration:0.5f];
-    [scaleBpmText setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn]];
+    [scaleBpmText setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
     [scaleBpmText setFromValue: [NSNumber numberWithFloat: 0.5f]];
     [scaleBpmText setToValue: [NSNumber numberWithFloat: 1.0f]];
     [scaleBpmText setFillMode:kCAFillModeForwards];
     [scaleBpmText setRemovedOnCompletion:NO];
-    [_bpmTextLayer addAnimation:scaleBpmText forKey:@"transform.scale"];
-    
-    CABasicAnimation *scaleLine = [[CABasicAnimation alloc] init];
-    [scaleLine setDuration:0.5f];
-    [scaleLine setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn]];
-    [scaleLine setFromValue: [NSNumber numberWithFloat: 1.0f]];
-    [scaleLine setToValue: [NSNumber numberWithFloat: 0.0f]];
-    [scaleLine setFillMode:kCAFillModeForwards];
-    [scaleLine setRemovedOnCompletion:NO];
-    [_lineLayer addAnimation:scaleLine forKey:@"transform.scale.y"];
-    
-    CABasicAnimation *fadeLine = [[CABasicAnimation alloc] init];
+    [bpmTextLayer addAnimation:scaleBpmText forKey:@"enlargeBpmText"];
+
+    CABasicAnimation *fadeLine = [CABasicAnimation animationWithKeyPath:@"opacity"];
     [fadeLine setDuration:0.5f];
     [fadeLine setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn]];
     [fadeLine setFromValue: [NSNumber numberWithFloat: 0.7f]];
     [fadeLine setToValue: [NSNumber numberWithFloat: 0.0f]];
     [fadeLine setFillMode:kCAFillModeForwards];
     [fadeLine setRemovedOnCompletion:NO];
-    [_lineLayer addAnimation:fadeLine forKey:@"opacity"];
-    
-    NSMutableArray* animationsArray = [NSMutableArray arrayWithObjects:scaleBpmText, scaleLine, fadeLine,nil];
-    
-    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
-    [animationGroup setAnimations:animationsArray];
-    [_lineLayer addAnimation:animationGroup forKey:nil];
+    [lineLayer addAnimation:fadeLine forKey:@"fadeLineOut"];
+
+    CABasicAnimation *scaleLine = [CABasicAnimation animationWithKeyPath:@"transform.scale.y"];
+    [scaleLine setDuration:0.5f];
+    [scaleLine setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    [scaleLine setFromValue: [NSNumber numberWithFloat: 1.0f]];
+    [scaleLine setToValue: [NSNumber numberWithFloat: 4.0f]];
+    [scaleLine setFillMode:kCAFillModeForwards];
+    [scaleLine setRemovedOnCompletion:YES];
+    [lineLayer addAnimation:scaleLine forKey:@"enlargeLine"];
 }
 
 - (void)touchesMoved: (float)xPos :(float) yPos
 {
-    float displayPos = 80;
+    [bpmTextLayer removeAnimationForKey:@"enlargeBpmText"];
+    [lineLayer removeAnimationForKey:@"fadeLineOut"];
+    [lineLayer setOpacity:0.7f];   // display line
 
+    //Since touchesMoved resets the animation, I have to get the previous transform scale to determine
+    //the next animation
+    CATransform3D prevBpmTextLayerTrans = [(CALayer *)[bpmTextLayer presentationLayer] transform];
+    float scale = prevBpmTextLayerTrans.m11;
+    if (scale > 0.5f){
+        scale = scale  - 0.01f;
+    }
+
+    //rescale using the previous touchesMoved
+    CABasicAnimation *scaleBpmText = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    [scaleBpmText setDuration:0.05f];
+    [scaleBpmText setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    [scaleBpmText setFromValue: [NSNumber numberWithFloat: scale]];
+    [scaleBpmText setToValue: [NSNumber numberWithFloat: 0.5f]];
+    [scaleBpmText setFillMode:kCAFillModeForwards];
+    [scaleBpmText setRemovedOnCompletion:NO];
+    [bpmTextLayer addAnimation:scaleBpmText forKey:@"shrinkBpmText"];
+
+    //help user to see the bpm depending on the location of their finger
+    float displayPos = 80;
     if((int)xPos < 130){
         displayPos = 250;
     }
 
+    //remove animation to speed up performance
     [CATransaction begin];
     [CATransaction setAnimationDuration:0];
-    [_lineLayer setPosition:CGPointMake(30, yPos)];
-    [_bpmTextLayer setPosition:CGPointMake(displayPos, yPos)];
-    [_bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)yPos]];
+    [lineLayer setPosition:CGPointMake(30, yPos)];
+    [bpmTextLayer setPosition:CGPointMake(displayPos, yPos)];
+    [bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)yPos]];
     [CATransaction commit];
 }
 
