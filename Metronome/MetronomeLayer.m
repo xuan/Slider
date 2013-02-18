@@ -10,7 +10,6 @@
 
 @implementation MetronomeLayer
 {
-    bool animate;
     bool shrinkBpmTextStopped;
 }
 
@@ -34,8 +33,6 @@
     [bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", 100]];
     [bpmTextLayer setFontSize:48.0f];
     [self addSublayer:bpmTextLayer];
-
-    animate = true;
 }
 
 //use for tap gesture to increment/decrement small values
@@ -52,8 +49,7 @@
 
 - (void)touchesBegan: (float)xPos :(float) yPos
 {
-    animate = true;
-    shrinkBpmTextStopped = false;
+    shrinkBpmTextStopped = NO;
 }
 
 - (void)touchesEnded
@@ -83,7 +79,9 @@
     [scaleLine setFillMode:kCAFillModeForwards];
     [scaleLine setRemovedOnCompletion:YES];
     [lineLayer addAnimation:scaleLine forKey:@"enlargeLine"];
-    animate = true;
+
+    shrinkBpmTextStopped = NO;
+    [bpmTextLayer removeAnimationForKey:@"shrinkBpmText"];
 }
 
 
@@ -92,14 +90,6 @@
 {
     [bpmTextLayer removeAnimationForKey:@"enlargeBpmText"];
     [lineLayer removeAnimationForKey:@"fadeLineOut"];
-    [lineLayer setOpacity:0.7f];   // display line
-
-    CATextLayer *presentationBpmText = [bpmTextLayer presentationLayer];
-    int currentY =  (int) [presentationBpmText position].y;
-
-    if (yPos != currentY) {
-        animate = true;
-    }
 
     //help user to see the bpm depending on the location of their finger
     float displayPos = 80;
@@ -107,33 +97,33 @@
         displayPos = 250;
     }
 
-    NSLog(@"animate %s shrinkBpmTextStopped %s", animate ? "true" : "false", shrinkBpmTextStopped ? "true" : "false");
+    //Since touchesMoved resets the animation, I have to get the previous transform scale to determine
+    //the next animation
+    CATransform3D prevBpmTextLayerTrans = [(CALayer *)[bpmTextLayer presentationLayer] transform];
+    float scale = prevBpmTextLayerTrans.m11;
+    if (scale > 0.5f){
+        scale = scale  - 0.01f;
+    }
 
-    if (!animate || !shrinkBpmTextStopped)
+    //rescale using the previous touchesMoved
+    CABasicAnimation *scaleBpmText = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    [scaleBpmText setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    [scaleBpmText setFromValue: [NSNumber numberWithFloat: scale]];
+    [scaleBpmText setToValue: [NSNumber numberWithFloat: 0.5f]];
+    [scaleBpmText setFillMode:kCAFillModeForwards];
+    [scaleBpmText setRemovedOnCompletion:NO];
+    [scaleBpmText setDelegate:self];
+    [bpmTextLayer addAnimation:scaleBpmText forKey:@"shrinkBpmText"];
+
+
+    NSLog(@"Shrink %s", shrinkBpmTextStopped?"YES":"NO");
+    if (!shrinkBpmTextStopped)
     {
-
-        //Since touchesMoved resets the animation, I have to get the previous transform scale to determine
-        //the next animation
-        CATransform3D prevBpmTextLayerTrans = [(CALayer *)[bpmTextLayer presentationLayer] transform];
-        float scale = prevBpmTextLayerTrans.m11;
-        if (scale > 0.5f){
-            scale = scale  - 0.01f;
-        }
-
-        //rescale using the previous touchesMoved
-        CABasicAnimation *scaleBpmText = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-        [scaleBpmText setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
-        [scaleBpmText setFromValue: [NSNumber numberWithFloat: scale]];
-        [scaleBpmText setToValue: [NSNumber numberWithFloat: 0.5f]];
-        [scaleBpmText setFillMode:kCAFillModeForwards];
-        [scaleBpmText setRemovedOnCompletion:NO];
-        [scaleBpmText setDelegate:self];
-        [bpmTextLayer addAnimation:scaleBpmText forKey:@"shrinkBpmText"];
-
         [lineLayer setPosition:CGPointMake(30, yPos)];
         [bpmTextLayer setPosition:CGPointMake(displayPos, yPos)];
         [bpmTextLayer setString:[NSString stringWithFormat:@"%dbpm", (int)yPos]];
-        animate = false;
+        [lineLayer setOpacity:0.7f];   // display line
+
     } else {
 //      NSLog(@"yPos %d presentationLayer %d", (int)yPos, (int)[bpmPresentationLayer position].y);
 
@@ -152,8 +142,7 @@
     if (theAnimation == [bpmTextLayer animationForKey:@"shrinkBpmText"])
     {
         NSLog(@"shrinkBpmText stopped ");
-        animate = false;
-        shrinkBpmTextStopped = true;
+        shrinkBpmTextStopped = YES;
     }
 }
 

@@ -9,7 +9,7 @@
 #import "MetronomeView.h"
 #import "MetronomeLayer.h"
 
-CGFloat const gestureMinimumTranslation = 20.0;
+CGFloat const gestureMinimumTranslation = 10.0;
 
 typedef enum : NSInteger {
     kDirectionNone,
