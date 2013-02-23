@@ -8,6 +8,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MetronomeView.h"
 #import "MetronomeLayer.h"
+#import "OnOffLayer.h"
 
 CGFloat const gestureMinimumTranslation = 10.0;
 
@@ -21,32 +22,68 @@ typedef enum : NSInteger {
 
 @interface MetronomeView ()
 {
-    MoveDirection direction;
+    MoveDirection _direction;
+    CGPoint _originalCenter;
 }
 
 @property(nonatomic,strong)MetronomeLayer *metronomeLayer;
+@property(nonatomic,strong)OnOffLayer *onOffLayer;
 
 @end
 
 @implementation MetronomeView
 
-@synthesize metronomeLayer;
+@synthesize metronomeLayer, onOffLayer;
 
-- (void)awakeFromNib
+-(void)awakeFromNib
 {
-    //Add layers
+    [self baseInit];
+}
+
+- (void) baseInit
+{
+    // Drawing code
     metronomeLayer = [MetronomeLayer layer];
     //set metronomeLayer to fit whole screen
     [metronomeLayer setFrame:CGRectMake(0, 0, [self frame].size.width, [self frame].size.height)];
     [[self layer]addSublayer:metronomeLayer];
     [metronomeLayer setNeedsDisplay];
-
+    
+    onOffLayer = [OnOffLayer layer];
+    [onOffLayer setFrame:CGRectMake(0, 0, [self frame].size.width, [self frame].size.height)];
+    [[self layer] setMask:onOffLayer];
+    [onOffLayer setNeedsDisplay];
+    
     //Register gestures
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     [self addGestureRecognizer:tapRecognizer];
     
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
     [self addGestureRecognizer:panRecognizer];
+}
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        [self baseInit];
+    }
+    return self;
+}
+
+- (id) initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self baseInit];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super initWithCoder:aDecoder])) {
+        [self baseInit];
+    }
+    return self;
 }
 
 #pragma mark - Gesture handlers
@@ -65,30 +102,61 @@ typedef enum : NSInteger {
 
     if (gesture.state == UIGestureRecognizerStateBegan)
     {
-        direction = kDirectionNone;
+        _direction = kDirectionNone;
         [metronomeLayer touchesBegan:loc.x :loc.y];
+        _originalCenter = [self center];
     }
     else if (gesture.state == UIGestureRecognizerStateChanged)
     {
-        direction = [self determineDirectionIfNeeded:translation];
+        _direction = [self determineDirectionIfNeeded:translation];
 
-        if (direction == kDirectionDown || direction == kDirectionUp) {
+        if (_direction == kDirectionDown || _direction == kDirectionUp) {
             [metronomeLayer touchesMoved:loc.x :loc.y];
+        } else if (_direction == kDirectionLeft || _direction == kDirectionRight) {
+            
+            // translate the center
+            CGPoint translation = [gesture translationInView:self];
+            self.center = CGPointMake(_originalCenter.x + translation.x, _originalCenter.y);
         }
     }
     else if (gesture.state == UIGestureRecognizerStateEnded)
     {
-        direction = [self determineDirectionIfNeeded:translation];
-        if (direction == kDirectionDown || direction == kDirectionUp) {
+        _direction = [self determineDirectionIfNeeded:translation];
+        if (_direction == kDirectionDown || _direction == kDirectionUp) {
             [metronomeLayer touchesEnded];
         }
+        
+        // the frame this cell would have had before being dragged
+        CGRect originalFrame = CGRectMake(0, self.frame.origin.y,
+                                          self.bounds.size.width, self.bounds.size.height);
+        
+        [UIView animateWithDuration:0.3f delay:0.0f options:UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+                             self.frame = originalFrame;
+                         } completion:nil];
+        
     }
+}
+
+-(CABasicAnimation *)bounceAnimationFrom:(NSValue *)from
+                                      to:(NSValue *)to
+                              forKeyPath:(NSString *)keypath
+                            withDuration:(CFTimeInterval)duration
+{
+    CABasicAnimation * result = [CABasicAnimation animationWithKeyPath:keypath];
+    [result setFromValue:from];
+    [result setToValue:to];
+    [result setDuration:duration];
+    
+    [result setTimingFunction:[CAMediaTimingFunction functionWithControlPoints:.5 :1.8 :.8 :0.8]];
+    
+    return  result;
 }
 
 - (MoveDirection)determineDirectionIfNeeded:(CGPoint)translation
 {
-    if (direction != kDirectionNone)
-        return direction;
+    if (_direction != kDirectionNone)
+        return _direction;
     // determine if horizontal swipe only if you meet some minimum velocity
 
     if (fabs(translation.x) > gestureMinimumTranslation)
@@ -131,7 +199,7 @@ typedef enum : NSInteger {
         }
     }
 
-    return direction;
+    return _direction;
 }
 
 @end
