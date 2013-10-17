@@ -31,6 +31,7 @@
     [bpmTextLayer setContentsScale:[[UIScreen mainScreen]scale]];
     [bpmTextLayer setString:[NSString stringWithFormat:@"%d", 100]];
     [bpmTextLayer setFontSize:48.0f];
+    [bpmTextLayer setFont:@"Helvetica-Light"];
     [self addSublayer:bpmTextLayer];
     
     CATextLayer *bpmText = [CATextLayer layer];
@@ -41,6 +42,7 @@
     [bpmText setContentsScale:[[UIScreen mainScreen]scale]];
     [bpmText setString:[NSString stringWithFormat:@"bpm"]];
     [bpmText setFontSize:24.0f];
+    [bpmText setFont:@"Helvetica-Light"];
     [bpmText setOpacity:0.7f];
     [bpmTextLayer addSublayer:bpmText];
 }

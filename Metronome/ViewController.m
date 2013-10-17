@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "MetronomeView.h"
 
-@interface ViewController ()
+@interface ViewController ()<UIScrollViewDelegate>
 @property(nonatomic,strong)MetronomeView *metronomeView;
 @end
 
@@ -19,10 +19,25 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    UIScrollView *scroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    scroll.delegate = self;
+    scroll.pagingEnabled = NO;
+    scroll.showsHorizontalScrollIndicator = NO;
+    scroll.showsVerticalScrollIndicator = NO;
+
     metronomeView = [[MetronomeView alloc]initWithFrame:CGRectMake(0, 0, [[self view]frame].size.width, [[self view]frame].size.height)];
     [metronomeView setBackgroundColor:[UIColor blueColor]];
-    [[self view] addSubview:metronomeView];
+    [scroll addSubview:metronomeView];
     
+    [[self view] addSubview:scroll];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if(scrollView.bounds.origin.y >500){
+        CGPoint offset = scrollView.contentOffset;
+        [scrollView setContentOffset:offset animated:NO];
+    }
 }
 
 - (void)didReceiveMemoryWarning
